@@ -36,7 +36,7 @@ export class Chance {
     return this;
   }
 
-  compute() {
+  compute(): any {
     let max = this._values.map(object => {
       return object.value;
     }).reduce((value1, value2) => {
@@ -56,12 +56,12 @@ export class Chance {
 
     for (let i = 0; i < sorted.length; i++) {
       if (rand <= sorted[i].value + prev) {
-        return sorted[i].cb();
+        return sorted[i].cb ? sorted[i].cb() : sorted[i].cb;
       }
 
       prev += sorted[i].value;
     }
 
-    return this._else();
+    return this._else ? this._else() : this._else;
   }
 }
