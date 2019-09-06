@@ -23,10 +23,14 @@ export class Chance {
 
   sync() {
     this._mode = 'sync';
+
+    return this;
   }
 
   async() {
     this._mode = 'async';
+    
+    return this;
   }
 
   on(value: number, cb: CallableFunction): Chance {
