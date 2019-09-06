@@ -7,8 +7,11 @@ export class Chance {
   private _total: number;
   private _values: Array<ChanceInterface> = [];
   private _else: CallableFunction = null;
+  private _mode: string;
 
   constructor(total: number = 0) {
+    this.async();
+
     if (total <= 0) {
       return;
     } else if (total < 1) {
@@ -16,6 +19,14 @@ export class Chance {
     }
 
     this._total = total;
+  }
+
+  sync() {
+    this._mode = 'sync';
+  }
+
+  async() {
+    this._mode = 'async';
   }
 
   on(value: number, cb: CallableFunction): Chance {
@@ -36,7 +47,7 @@ export class Chance {
     return this;
   }
 
-  compute(): any {
+  async compute(): Promise<any> {
     let max = this._values.map(object => {
       return object.value;
     }).reduce((value1, value2) => {
@@ -56,10 +67,18 @@ export class Chance {
 
     for (let i = 0; i < sorted.length; i++) {
       if (rand <= sorted[i].value + prev) {
+        if (this._mode == 'async') {
+          return await sorted[i].cb ? sorted[i].cb() : sorted[i].cb;
+        }
+        
         return sorted[i].cb ? sorted[i].cb() : sorted[i].cb;
       }
 
       prev += sorted[i].value;
+    }
+
+    if (this._mode == 'async') {
+      return await this._else ? this._else() : this._else;
     }
 
     return this._else ? this._else() : this._else;
