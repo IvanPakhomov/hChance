@@ -56,14 +56,12 @@ export class Chance {
 
     for (let i = 0; i < sorted.length; i++) {
       if (rand <= sorted[i].value + prev) {
-        sorted[i].cb();
-
-        return;
+        return sorted[i].cb();
       }
 
       prev += sorted[i].value;
     }
 
-    this._else();
+    return this._else();
   }
 }
