@@ -8,7 +8,7 @@ export class Chance {
   private _values: Array<ChanceInterface> = [];
   private _else: CallableFunction = null;
 
-  constructor(total: number = 0) {
+  constructor(total: number = 0, value: number = 0, cb: CallableFunction = null) {
     if (total <= 0) {
       return;
     } else if (total < 1) {
@@ -16,6 +16,10 @@ export class Chance {
     }
 
     this._total = total;
+
+    if (value > 0 && cb) {
+      this.on(value, cb);
+    }
   }
 
   on(value: number, cb: CallableFunction): Chance {
@@ -39,12 +43,12 @@ export class Chance {
   compute<T = any>(): T {
     let max = this._values.map(object => {
       return object.value;
-    }).reduce((value1, value2) => {
-      return value1 + value2;
-    });
+    }).reduce((value1, value2) => value1 + value2, 0);
 
-    if (this._total > max && !!this._else) {
-      max = this._total;
+    if (this._total > max) {
+      if (!!this._else || this._values.length <= 1) {
+        max = this._total;
+      }
     }
 
     let sorted = this._values.sort((object1, object2) => {
